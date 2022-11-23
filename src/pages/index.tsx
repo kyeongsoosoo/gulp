@@ -1,185 +1,197 @@
-import { useRouter } from 'next/router';
+import {
+  ArcElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+} from 'chart.js';
+import { useState } from 'react';
+import { Doughnut, Line } from 'react-chartjs-2';
 
-import { Meta } from '@/layouts/Meta';
-import { Main } from '@/templates/Main';
+import type { Month, MonthlyData } from './const';
+import { MonthlyDatas, months } from './const';
 
-const Index = () => {
-  const router = useRouter();
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Filler
+);
+
+export const areaOption = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: false,
+    },
+  },
+};
+
+const getMent = (portion: number) => {
+  if (portion < 0.2) return 'Bad 😭';
+  if (portion < 0.5) return 'SoSo 😌';
+  if (portion < 0.8) return 'Good 😄';
+
+  return 'Great 😘';
+};
+
+const AreaChart = ({ md }: { md: MonthlyData }) => {
+  const targetIndex = months.findIndex((m) => m === md.month);
+  const labels = months.slice(targetIndex - 5, targetIndex + 1);
+
+  const areaData = {
+    labels,
+    datasets: [
+      {
+        fill: true,
+
+        data: labels.map((label) => {
+          const data = MonthlyDatas.find((d) => d.month === label);
+          return Math.round((data!.intake / data!.total) * 100);
+        }),
+        borderColor: 'rgb(53, 162, 235)',
+        backgroundColor: 'rgba(53, 162, 235, 0.5)',
+      },
+    ],
+  };
 
   return (
-    <Main
-      meta={
-        <Meta
-          title="Next.js Boilerplate Presentation"
-          description="Next js Boilerplate is the perfect starter code for your project. Build your React application with the Next.js framework."
-        />
-      }
-    >
-      <a href="https://github.com/ixartz/Next-js-Boilerplate">
-        <img
-          src={`${router.basePath}/assets/images/nextjs-starter-banner.png`}
-          alt="Nextjs starter banner"
-        />
-      </a>
-      <h1 className="text-2xl font-bold">
-        Boilerplate code for your Nextjs project with Tailwind CSS
-      </h1>
-      <p>
-        <span role="img" aria-label="rocket">
-          🚀
-        </span>{' '}
-        Next.js Boilerplate is a starter code for your Next js project by
-        putting developer experience first .{' '}
-        <span role="img" aria-label="zap">
-          ⚡️
-        </span>{' '}
-        Made with Next.js, TypeScript, ESLint, Prettier, Husky, Lint-Staged,
-        VSCode, Netlify, PostCSS, Tailwind CSS.
-      </p>
-      <h2 className="text-lg font-semibold">Next js Boilerplate Features</h2>
-      <p>Developer experience first:</p>
-      <ul>
-        <li>
-          <span role="img" aria-label="fire">
-            🔥
-          </span>{' '}
-          <a href="https://nextjs.org" rel="nofollow">
-            Next.js
-          </a>{' '}
-          for Static Site Generator
-        </li>
-        <li>
-          <span role="img" aria-label="art">
-            🎨
-          </span>{' '}
-          Integrate with{' '}
-          <a href="https://tailwindcss.com" rel="nofollow">
-            Tailwind CSS
-          </a>
-        </li>
-        <li>
-          <span role="img" aria-label="nail_care">
-            💅
-          </span>{' '}
-          PostCSS for processing Tailwind CSS
-        </li>
-        <li>
-          <span role="img" aria-label="tada">
-            🎉
-          </span>{' '}
-          Type checking Typescript
-        </li>
-        <li>
-          <span role="img" aria-label="pencil2">
-            ✏️
-          </span>{' '}
-          Linter with{' '}
-          <a href="https://eslint.org" rel="nofollow">
-            ESLint
-          </a>
-        </li>
-        <li>
-          <span role="img" aria-label="hammer_and_wrench">
-            🛠
-          </span>{' '}
-          Code Formatter with{' '}
-          <a href="https://prettier.io" rel="nofollow">
-            Prettier
-          </a>
-        </li>
-        <li>
-          <span role="img" aria-label="fox_face">
-            🦊
-          </span>{' '}
-          Husky for Git Hooks
-        </li>
-        <li>
-          <span role="img" aria-label="no_entry_sign">
-            🚫
-          </span>{' '}
-          Lint-staged for running linters on Git staged files
-        </li>
-        <li>
-          <span role="img" aria-label="no_entry_sign">
-            🗂
-          </span>{' '}
-          VSCode configuration: Debug, Settings, Tasks and extension for
-          PostCSS, ESLint, Prettier, TypeScript
-        </li>
-        <li>
-          <span role="img" aria-label="robot">
-            🤖
-          </span>{' '}
-          SEO metadata, JSON-LD and Open Graph tags with Next SEO
-        </li>
-        <li>
-          <span role="img" aria-label="robot">
-            ⚙️
-          </span>{' '}
-          <a
-            href="https://www.npmjs.com/package/@next/bundle-analyzer"
-            rel="nofollow"
-          >
-            Bundler Analyzer
-          </a>
-        </li>
-        <li>
-          <span role="img" aria-label="rainbow">
-            🌈
-          </span>{' '}
-          Include a FREE minimalist theme
-        </li>
-        <li>
-          <span role="img" aria-label="hundred">
-            💯
-          </span>{' '}
-          Maximize lighthouse score
-        </li>
-      </ul>
-      <p>Built-in feature from Next.js:</p>
-      <ul>
-        <li>
-          <span role="img" aria-label="coffee">
-            ☕
-          </span>{' '}
-          Minify HTML &amp; CSS
-        </li>
-        <li>
-          <span role="img" aria-label="dash">
-            💨
-          </span>{' '}
-          Live reload
-        </li>
-        <li>
-          <span role="img" aria-label="white_check_mark">
-            ✅
-          </span>{' '}
-          Cache busting
-        </li>
-      </ul>
-      <h2 className="text-lg font-semibold">Our Stater code Philosophy</h2>
-      <ul>
-        <li>Minimal code</li>
-        <li>SEO-friendly</li>
-        <li>
-          <span role="img" aria-label="rocket">
-            🚀
-          </span>{' '}
-          Production-ready
-        </li>
-      </ul>
-      <p>
-        Check our GitHub project for more information about{' '}
-        <a href="https://github.com/ixartz/Next-js-Boilerplate">
-          Nextjs Boilerplate
-        </a>
-        . You can also browse our{' '}
-        <a href="https://creativedesignsguru.com/category/nextjs/">
-          Premium NextJS Templates
-        </a>{' '}
-        on our website to support this project.
-      </p>
-    </Main>
+    <div className="mt-10">
+      <p className="text-2xl font-bold">지난 달과 비교</p>
+      <Line options={areaOption} data={areaData} />
+    </div>
+  );
+};
+
+const RoundChart1 = ({ md }: { md: MonthlyData }) => {
+  const chartData = {
+    datasets: [
+      {
+        data: [md.intake, md.total - md.intake],
+        backgroundColor: ['#48EDC5', '#D9D9D9'],
+        borderColor: ['#3DBCB4', '#D9D9D9'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-5">
+      <div className="relative h-48 w-48">
+        <Doughnut data={chartData} />
+        <div className="absolute top-1/2 left-1/2 z-20 flex h-32 w-32 translate-x-[-50%] translate-y-[-45%] flex-col items-center justify-center rounded-[64px] bg-white">
+          <p className="font-medium">
+            {md.intake}/{md.total}
+          </p>
+          <p className="text-lg font-bold">{getMent(md.intake / md.total)}</p>
+        </div>
+      </div>
+      <p className="font-semibold">2022년 {md.month}</p>
+    </div>
+  );
+};
+
+const RoundChart2 = ({ md }: { md: MonthlyData }) => {
+  const chartData = {
+    datasets: [
+      {
+        data: [md.intake, md.total - md.intake],
+        backgroundColor: ['#4899ED', '#D9D9D9'],
+        borderColor: ['#3D5ABC', '#D9D9D9'],
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-5">
+      <div className="relative h-48 w-48">
+        <Doughnut data={chartData} />
+        <div className="absolute top-1/2 left-1/2 z-20 flex h-32 w-32 translate-x-[-50%] translate-y-[-45%] flex-col items-center justify-center rounded-[64px] bg-white">
+          <p className="font-medium">
+            {md.intake}/{md.total}
+          </p>
+          <p className="text-lg font-bold">{getMent(md.intake / md.total)}</p>
+        </div>
+      </div>
+      <p className="font-semibold">2022년 {md.month}</p>
+    </div>
+  );
+};
+
+const Index = () => {
+  const [selectedMonth, setSelectedMonth] = useState<Month>('6월');
+
+  const mdIdx = MonthlyDatas.findIndex((d) => d.month === selectedMonth);
+  const md = MonthlyDatas[mdIdx] as MonthlyData;
+  const previousMd = MonthlyDatas[mdIdx - 1] as MonthlyData;
+
+  const handleNext = () => {
+    const currentMonthIdx = months.findIndex((d) => d === selectedMonth);
+
+    setSelectedMonth(months[currentMonthIdx + 1] ?? '6월');
+  };
+
+  const handlePrevious = () => {
+    const currentMonthIdx = months.findIndex((d) => d === selectedMonth);
+
+    setSelectedMonth(months[currentMonthIdx - 1] ?? '6월');
+  };
+
+  return (
+    <main className="flex h-screen w-screen items-center justify-center bg-slate-200">
+      <div className="h-[700px] w-[440px] rounded-xl bg-white py-8 px-4 shadow-2xl">
+        <div className="flex items-center justify-between">
+          <p className="font-bold">2022년 {selectedMonth}</p>
+          <div className="text-3xl text-blue-500">
+            <button
+              onClick={handlePrevious}
+              disabled={selectedMonth === '6월'}
+              className={
+                selectedMonth === '6월'
+                  ? 'mr-5 text-gray-600'
+                  : 'mr-5 text-blue-500'
+              }
+            >
+              {'<'}
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={selectedMonth === '12월'}
+              className={
+                selectedMonth === '12월' ? 'text-gray-600' : 'text-blue-500'
+              }
+            >
+              {'>'}
+            </button>
+          </div>
+        </div>
+        <div>
+          <p className="text-3xl font-bold">복약 리포트</p>
+          <p className="text-base font-light">
+            제시간에 약물을 복용한 횟수를 보여줍니다.
+          </p>
+        </div>
+        <div className=" mt-5 flex justify-center">
+          <RoundChart1 md={md} />
+          <RoundChart2 md={previousMd} />
+        </div>
+        <AreaChart md={md} />
+      </div>
+    </main>
   );
 };
 
